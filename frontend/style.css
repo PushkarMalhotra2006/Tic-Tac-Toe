@@ -11,9 +11,6 @@ body{
     background-color: #111827;
 }
 #Title{
-    position: absolute;
-    top: 50px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,4 +49,10 @@ button:hover{
     background-color: #0434b9;
     opacity: 0.9;
     transform: scale(1.10);
+}
+#Image{
+    display: flex;
+    justify-content: center;
+    width: 700px;
+    height: 300px;
 }
