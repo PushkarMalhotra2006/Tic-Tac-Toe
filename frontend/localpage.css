@@ -1,0 +1,111 @@
+body{
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+#game-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+#back{
+    padding: 10px 10px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+#button-back{
+    font-size: 1.3rem;
+    background-color: white
+}
+
+#scoreboard{
+    display: flex;
+
+    width: 55%;
+    box-sizing: border-box;
+    border: 2px solid black;
+    overflow: hidden;
+}
+#scoreboard > div{
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#scoreboard > div:not(:last-child){
+    border-right: 2px solid black;
+}
+#scoreboard p{
+    margin: 0;
+    padding: 12px;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+}
+#scoreboard p:first-child{
+    border-bottom: 2px solid black;
+}
+
+#board{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+.cell{
+    width: 100px;
+    height: 100px;
+}
+/* Vertical lines */
+.cell:nth-child(1),
+.cell:nth-child(2),
+.cell:nth-child(4),
+.cell:nth-child(5),
+.cell:nth-child(7),
+.cell:nth-child(8){
+    border-right: 4px solid black;
+}
+/* Horizontal lines */
+.cell:nth-child(1),
+.cell:nth-child(2),
+.cell:nth-child(3),
+.cell:nth-child(4),
+.cell:nth-child(5),
+.cell:nth-child(6){
+    border-bottom: 4px solid black;
+}
+
+#turn-teller{
+    margin: 30px 0;
+    font-size: 1.9rem;
+}
+
+#result{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin-top: 40px;
+    gap: 15px;
+    padding: 25px 40px;
+    border-radius: 15px;
+    border: 2px solid;
+
+    display: none;
+}
+
+button{
+    width: 150px;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 30px;
+    font-size: 1rem;
+}
+h2{
+    width: 150px;
+    font-size: 1.8rem;
+    margin-left: 20px;
+}
