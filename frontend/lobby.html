@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Waiting Lobby</title>
+        <link rel="stylesheet" href="lobbypage.css">
+    </head>
+    <body>
+        <div id="back">
+            <button id="button-back">⬅ Back</button>
+        </div>
+
+        <div id="lobby-container">
+
+            <p id="lobby-title">Waiting in Lobby..</p>
+
+            <div id="room-info">
+                <span id="room-label">Room Code:</span>
+
+                <span id="room-code">ABC123</span>
+
+                <button id="copy-code-btn" title="Copy Code">
+                </button>
+            </div>
+
+            <hr id="section-divider">
+            <!-- Optional image/logo goes here later -->
+
+            <h2 id="players-list">Players</h2>
+
+            <div id="players-card">
+                
+                <div id="player-one">
+                    <span>You (X)</span>
+                    <span>✔️</span>
+                </div>
+
+                <div id="player-two">
+                    <span>Waiting for opponent...</span>
+                    <span>⏳</span>
+                </div>
+            </div>
+
+            <button id="start-btn" disabled>
+                Start Game
+            </button>
+
+        </div>
+    </body>
+</html>
