@@ -58,6 +58,13 @@ body{
     text-align: center;
     font-size: 1.4rem;
 }
+#error-msg{
+    color: red;
+    margin-top: -10px;
+    margin-bottom: -10px;
+    margin-left: 4px;
+    visibility: hidden;
+}
 #room-code-input{
     padding: 12px;
     font-size: 1rem;
