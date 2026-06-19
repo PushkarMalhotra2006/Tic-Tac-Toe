@@ -40,8 +40,9 @@ function checkwinner(){
         const third = pattern[2];
 
         if(board[first]!== "" && board[first]===board[second] && board[second]===board[third]){
-            resultHeading.textContent = `${board[first]} Won 🎉`;
+            resultHeading.textContent = `${board[first]} Wins! 🎉`;
             result.style.display ="flex";
+            overlay.style.display = "flex";
             gameactive=false;
             winnerfound=true;
 
@@ -58,6 +59,7 @@ function checkwinner(){
     if(!winnerfound && !board.includes("")){
         resultHeading.textContent = "It's a Draw !";
         result.style.display = "flex";
+        overlay.style.display = "flex";
         gameactive=false;
         drawScore++;
         drawScoreText.textContent = drawScore;
@@ -97,6 +99,7 @@ homeBtn.addEventListener("click", () => {
 
 rematchBtn.addEventListener("click", () => {
     result.style.display = "none";
+    overlay.style.display = "none";
 
     cells.forEach((cell) => {
         cell.textContent = "";
@@ -124,3 +127,5 @@ const oScoreText = document.getElementById("o-score");
 let xScore = 0;
 let drawScore = 0;
 let oScore = 0;
+
+const overlay = document.getElementById("overlay");
