@@ -73,6 +73,14 @@ body{
 .cell{
     width: 115px;
     height: 115px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 4rem;
+    font-weight: lighter;
+    cursor: pointer;
 }
 /* Vertical lines */
 .cell:nth-child(1),
@@ -100,12 +108,15 @@ body{
 }
 
 #result{
-    display: flex;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    margin-top: 40px;
     gap: 15px;
     padding: 25px 40px;
     border-radius: 15px;
