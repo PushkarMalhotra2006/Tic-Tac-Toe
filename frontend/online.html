@@ -5,12 +5,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>Online Multiplayer</title>
-        <link rel="stylesheet" href="online.css">
+        <link rel="stylesheet" href="online.css"> 
     </head>
     <body>
         <div id="back">
             <button id="button-back">⬅ Back</button>
         </div>
+        <div id="username">
+            <button id="username-btn">Choose Name</button>
+            <span id="username-display"></span>
+            <div id="username-panel">
+                <label for="username-input">Username:</label>
+
+                <input type="text" id="username-input" maxlength="10" autocomplete="off">
+
+                <p id="username-error">Username shouldn't be empty</p>
+                <button id="save-username">Save</button>
+            </div>
+        </div>
+
         <div id="room-container">
             <h1 id="page-title">ONLINE MULTIPLAYER</h1>
 
