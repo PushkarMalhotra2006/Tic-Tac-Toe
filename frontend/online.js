@@ -14,7 +14,14 @@ const saveUsernameBtn = document.getElementById("save-username");
 const usernameInput = document.getElementById("username-input");
 const usernameError = document.getElementById("username-error");
 const usernameDisplay = document.getElementById("username-display");
-let username = "";
+let username = localStorage.getItem("username") || "";
+
+if (username !== "") {
+    usernameDisplay.textContent = username;
+
+    usernameBtn.style.display = "none";
+    usernameDisplay.style.display = "block";
+}
 
 usernameBtn.addEventListener("click", () => {
     usernamePanel.classList.toggle("active");
@@ -37,8 +44,9 @@ saveUsernameBtn.addEventListener("click", () => {
     }
 
     username = inputname;
-    usernameDisplay.textContent = username;
+    localStorage.setItem("username", username);
 
+    usernameDisplay.textContent = username;
     usernameBtn.style.display = "none";
     usernameDisplay.style.display = "block";
 
@@ -66,7 +74,7 @@ function generateroomcode(){
     return code;
 }
 
-createRoomBtn.addEventListener("click", () => {
+createRoomBtn.addEventListener("click", async () => {
 
     if (username === "") {
 
@@ -84,9 +92,15 @@ createRoomBtn.addEventListener("click", () => {
         return;
     }
 
-    const roomCode = generateroomcode();
+    const response = await fetch("http://127.0.0.1:8000/create-room",{
+        method : "POST"
+    });
 
-    window.location.href = `lobby.html?room=${roomCode}&host=true&name=${username}`;
+    const data = await response.json();
+
+    console.log(data);
+
+    window.location.href = `lobby.html?room=${data.Room_Code}&host=true&name=${username}`;
 });
 
 roomCodeInput.addEventListener("input", () => {
@@ -95,7 +109,7 @@ roomCodeInput.addEventListener("input", () => {
     errormsg.style.visibility = "hidden";
 });
 
-joinRoomBtn.addEventListener("click", () => {
+joinRoomBtn.addEventListener("click", async () => {
 
     if (username === "") {
 
@@ -127,7 +141,25 @@ joinRoomBtn.addEventListener("click", () => {
         return;
     }
 
-    window.location.href = `lobby.html?room=${inputcode}&host=false&name=${username}`;
+    const response = await fetch("http://127.0.0.1:8000/join-room",
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            room_code: inputcode
+        })
+    }
+);
+
+    if(response.ok){
+        window.location.href = `lobby.html?room=${inputcode}&host=false&name=${username}`;
+    }
+    else{
+        errormsg.textContent = "Room not found";
+        errormsg.style.visibility = "visible";
+    }
 })
 
 roomCodeInput.addEventListener("keydown", (event) => {
