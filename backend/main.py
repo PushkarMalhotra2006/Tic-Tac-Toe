@@ -71,7 +71,10 @@ def create_room():
 
         "board": ["","","","","","","","",""],
         "turn": "X",
+        "starting_player": "X",
+
         "game_active" : True,
+        "rematch_votes" : [],
 
         "scores": {
             "X": 0,
@@ -147,7 +150,6 @@ async def websocket_lobby(websocket: WebSocket, room_code: str):
         index = rooms[room_code]["connections"].index(websocket)
         
         if(index==0 and not rooms[room_code]["Game Started"]):
-            print("Host Disconnected")
 
             if len(rooms[room_code]["connections"]) >1:
                 await rooms[room_code]["connections"][1].send_text(
@@ -158,7 +160,9 @@ async def websocket_lobby(websocket: WebSocket, room_code: str):
             print(rooms)
         else:
             rooms[room_code]["connections"].pop(index)
-            rooms[room_code]["players"].pop(index)
+
+            if not rooms[room_code]["Game Started"]:
+                rooms[room_code]["players"].pop(index)
 
             for connection in rooms[room_code]["connections"]:
                 await connection.send_text(
@@ -177,7 +181,13 @@ async def websocket_game(websocket: WebSocket, room_code: str):
     await websocket.accept()
     rooms[room_code]["game_connections"].append(websocket)
 
-    print(f"Game Connection : {room_code}")
+    await websocket.send_text(
+        json.dumps({
+            "type": "player_info",
+            "hostname": rooms[room_code]["players"][0]["username"],
+            "guestname": rooms[room_code]["players"][1]["username"]
+        })
+    )
 
     try:
         while True:
@@ -229,9 +239,56 @@ async def websocket_game(websocket: WebSocket, room_code: str):
                             "board": rooms[room_code]["board"],
                             "turn": rooms[room_code]["turn"],
                             "winner": winner,
-                            "scores": rooms[room_code]["scores"]
+                            "scores": rooms[room_code]["scores"],
+                            "hostname": rooms[room_code]["players"][0]["username"],
+                            "guestname": rooms[room_code]["players"][1]["username"]
                         })
                     )
+            elif data.get("type") == "rematch":
+                player_index = rooms[room_code]["game_connections"].index(websocket)
+
+                if player_index not in rooms[room_code]["rematch_votes"]:
+                    rooms[room_code]["rematch_votes"].append(player_index)
+
+                if len(rooms[room_code]["rematch_votes"]) == 2:
+                    rooms[room_code]["board"] = ["","","","","","","","",""]
+                    rooms[room_code]["game_active"] = True
+                    rooms[room_code]["rematch_votes"] = []
+
+                    if rooms[room_code]["starting_player"] == "X":
+                        rooms[room_code]["starting_player"] = "O"
+                    else:
+                        rooms[room_code]["starting_player"] = "X"
+
+                    rooms[room_code]["turn"] = rooms[room_code]["starting_player"]
+
+                    for connection in rooms[room_code]["game_connections"]:
+                        await connection.send_text(
+                            json.dumps({
+                                "type": "rematch",
+                                "board": rooms[room_code]["board"],
+                                "turn": rooms[room_code]["turn"],
+                                "scores": rooms[room_code]["scores"],
+                                "hostname": rooms[room_code]["players"][0]["username"],
+                                "guestname": rooms[room_code]["players"][1]["username"]
+                            })
+                    )        
+
 
     except WebSocketDisconnect:
-        print("Game Disconnected")
+        
+        if room_code not in rooms:
+            return
+
+        if websocket in rooms[room_code]["game_connections"]:
+            rooms[room_code]["game_connections"].remove(websocket)
+
+        for connection in rooms[room_code]["game_connections"]:
+
+            await connection.send_text(
+                json.dumps({
+                    "type": "player_disconnected"
+                })
+            )
+
+        del rooms[room_code]

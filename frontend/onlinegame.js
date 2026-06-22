@@ -10,10 +10,6 @@ const roomCode = params.get("room");
 const username = params.get("name");
 const isHost = params.get("host") === "true";
 
-console.log(roomCode);
-console.log(username);
-console.log(isHost);
-
 const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/${roomCode}`);
 
 socket.onopen = () => {
@@ -31,6 +27,13 @@ socket.onmessage = (event) => {
 
     const data = JSON.parse(event.data);
 
+    if(data.type === "player_info"){
+
+        if(data.hostname && data.guestname){
+            turnTeller.textContent = `${data.hostname}'s Turn (X)`;
+        }
+    }
+
     if(data.type === "board_update"){
 
         board = data.board;
@@ -39,7 +42,12 @@ socket.onmessage = (event) => {
             cell.textContent = board[index];
         });
 
-        turnTeller.textContent =`Players ${data.turn}'s Turn`;
+        if(data.turn === "X"){
+            turnTeller.textContent =`${data.hostname}'s Turn (X)`;
+        }
+        else{
+            turnTeller.textContent =`${data.guestname}'s Turn (O)`;
+        }
 
         xScoreText.textContent = data.scores.X;
         oScoreText.textContent = data.scores.O;
@@ -58,26 +66,41 @@ socket.onmessage = (event) => {
             overlay.style.display = "flex";
         }
     }
+
+    if(data.type === "rematch"){
+        board = data.board
+        cells.forEach((cell,index) => {
+            cell.textContent = board[index];
+        })
+        gameactive = true;
+
+        result.style.display = "none";
+        overlay.style.display = "none";
+
+        if(data.turn === "X"){
+            turnTeller.textContent =`${data.hostname}'s Turn (X)`;
+        }
+        else{
+            turnTeller.textContent =`${data.guestname}'s Turn (O)`;
+        }
+
+        rematchBtn.style.display ="block";
+        rematchBtn.disabled = false;
+        rematchsync.textContent = "";
+    }
+
+    if(data.type === "player_disconnected"){
+        gameactive = false;
+
+        resultHeading.textContent = "Opponent Disconnected";
+        rematchsync.textContent = "The match has ended.";
+        rematchBtn.style.display = "none";
+        homeBtn.textContent = "Back to Home";
+
+        result.style.display = "flex";
+        overlay.style.display = "flex";
+    }
 };
-
-let board = ["", "", "", "", "", "", "", "", ""];
-const winningPatterns = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-
-    [0, 4, 8],
-    [2, 4, 6]
-];
-
-const firstplayer = "X";
-const secondplayer = "O";
-let startingplayer = firstplayer;
-let currentplayer = startingplayer;
 
 let gameactive = true;
 
@@ -85,41 +108,7 @@ const turnTeller = document.querySelector("#turn-teller p");
 const cells = document.querySelectorAll(".cell");
 const result = document.getElementById("result");
 const resultHeading = document.querySelector("#result h2");
-
-function checkwinner(){
-    let winnerfound = false;
-
-    winningPatterns.forEach((pattern) => {
-        const first = pattern[0];
-        const second = pattern[1];
-        const third = pattern[2];
-
-        if(board[first]!== "" && board[first]===board[second] && board[second]===board[third]){
-            resultHeading.textContent = `${board[first]} Wins! 🎉`;
-            result.style.display ="flex";
-            overlay.style.display = "flex";
-            gameactive=false;
-            winnerfound=true;
-
-            if(board[first]===firstplayer){
-                xScore++;
-                xScoreText.textContent = xScore;
-            }
-            else{
-                oScore++;
-                oScoreText.textContent = oScore;
-            }
-        }
-    });
-    if(!winnerfound && !board.includes("")){
-        resultHeading.textContent = "It's a Draw !";
-        result.style.display = "flex";
-        overlay.style.display = "flex";
-        gameactive=false;
-        drawScore++;
-        drawScoreText.textContent = drawScore;
-    }
-}
+const rematchsync = document.getElementById("rematch-status");
 
 cells.forEach((cell,index) => {
     cell.addEventListener("click", () => {
@@ -147,26 +136,14 @@ homeBtn.addEventListener("click", () => {
 });
 
 rematchBtn.addEventListener("click", () => {
-    result.style.display = "none";
-    overlay.style.display = "none";
 
-    cells.forEach((cell) => {
-        cell.textContent = "";
-    });
+    socket.send(JSON.stringify({
+        "type" : "rematch"
+    }))
 
-    gameactive=true;
-    board = ["", "", "", "", "", "", "", "", ""];
-    
-    if (startingplayer === firstplayer) {
-        startingplayer = secondplayer;
-    }
-    else {
-        startingplayer = firstplayer;
-    }
+    rematchBtn.disabled = true;
+    rematchsync.textContent = "Waiting for opponent to accept rematch"
 
-    currentplayer = startingplayer;
-
-    turnTeller.textContent = `Player ${currentplayer}'s Turn`;
 });
 
 const xScoreText = document.getElementById("x-score");
