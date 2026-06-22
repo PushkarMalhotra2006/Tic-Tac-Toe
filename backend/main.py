@@ -19,11 +19,39 @@ class joinRoomRequest(BaseModel):
 
 rooms = {}
 
+winning_patterns = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+
+    [0,4,8],
+    [2,4,6]
+]
+
 def generateroomcode():
     chars = string.ascii_uppercase + string.digits
     code = "".join(random.choices(chars,k=6))
 
     return code
+
+def checkwinner(board):
+    winnerfound = False
+
+    for pattern in winning_patterns:
+        first,second,third = pattern
+
+        if(board[first]!="" and board[first]==board[second] and board[second]==board[third]):
+            winnerfound = True
+            return board[first]
+    
+    if not winnerfound and "" not in board:
+        return "Draw"
+    
+    return None
 
 @app.get("/")
 def home():
@@ -37,8 +65,21 @@ def create_room():
 
     rooms[room_code] = {
         "players": [],
-        "connections": []
+        "connections": [],
+        "game_connections": [],
+        "Game Started": False,
+
+        "board": ["","","","","","","","",""],
+        "turn": "X",
+        "game_active" : True,
+
+        "scores": {
+            "X": 0,
+            "O": 0,
+            "draw": 0
+        }
     }
+
     print(rooms)
 
     return {"Room_Code":room_code}
@@ -53,7 +94,7 @@ def join_room(request: joinRoomRequest):
     
     return {"success": True}
 
-@app.websocket("/ws/{room_code}")
+@app.websocket("/ws/lobby/{room_code}")
 async def websocket_lobby(websocket: WebSocket, room_code: str):
   
     if room_code not in rooms:
@@ -73,17 +114,31 @@ async def websocket_lobby(websocket: WebSocket, room_code: str):
         while True:
             data = await websocket.receive_text()
             data = json.loads(data)
-        
-            rooms[room_code]["players"].append(
-                { "username" : data["username"], "host" : data["host"] }
-            )
-    
-            for connection in rooms[room_code]["connections"]:
-                await connection.send_text(
-                    json.dumps(rooms[room_code]["players"])
+            
+            if data.get("type") == "Start Game":
+
+                idx = rooms[room_code]["connections"].index(websocket)
+                ishost = rooms[room_code]["players"][idx]["host"]
+
+                if not ishost:
+                    continue
+
+                rooms[room_code]["Game Started"] = True
+
+                for connection in rooms[room_code]["connections"]:
+                    await connection.send_text(json.dumps({"type" : "Start Game"}))
+
+            else:      
+                rooms[room_code]["players"].append(
+                    { "username" : data["username"], "host" : data["host"] }
                 )
         
-            print(rooms)
+                for connection in rooms[room_code]["connections"]:
+                    await connection.send_text(
+                        json.dumps(rooms[room_code]["players"])
+                    )
+            
+                print(rooms)
     except WebSocketDisconnect:
 
         if room_code not in rooms:
@@ -91,12 +146,13 @@ async def websocket_lobby(websocket: WebSocket, room_code: str):
     
         index = rooms[room_code]["connections"].index(websocket)
         
-        if(index==0):
+        if(index==0 and not rooms[room_code]["Game Started"]):
             print("Host Disconnected")
 
-            await rooms[room_code]["connections"][1].send_text(
-                json.dumps({"type": "Room Closed"})
-            )
+            if len(rooms[room_code]["connections"]) >1:
+                await rooms[room_code]["connections"][1].send_text(
+                    json.dumps({"type": "Room Closed"})
+                )
 
             del rooms[room_code]
             print(rooms)
@@ -110,3 +166,72 @@ async def websocket_lobby(websocket: WebSocket, room_code: str):
                 )
 
             print(rooms)
+
+@app.websocket("/ws/game/{room_code}")
+async def websocket_game(websocket: WebSocket, room_code: str):
+
+    if room_code not in rooms:
+        await websocket.close()
+        return
+
+    await websocket.accept()
+    rooms[room_code]["game_connections"].append(websocket)
+
+    print(f"Game Connection : {room_code}")
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            data = json.loads(data)
+
+            if data.get("type") == "move":
+                if not rooms[room_code]["game_active"]:
+                    continue
+
+                index = data["index"]
+                player_index = rooms[room_code]["game_connections"].index(websocket)
+
+                if rooms[room_code]["board"][index] != "":
+                    continue
+                
+                current_turn = rooms[room_code]["turn"]
+                if current_turn=="X" and player_index != 0:
+                    continue
+                if current_turn=="O" and player_index !=1:
+                    continue
+
+                rooms[room_code]["board"][index] = current_turn
+
+                winner = checkwinner(rooms[room_code]["board"])
+                if winner is not None:
+                    rooms[room_code]["game_active"] = False
+
+                if winner == "X":
+                    rooms[room_code]["scores"]["X"] += 1
+                
+                elif winner == "O":
+                    rooms[room_code]["scores"]["O"] += 1
+                
+                elif winner == "Draw":
+                    rooms[room_code]["scores"]["draw"] += 1
+
+                if winner is None:
+                    if current_turn=="X":
+                        rooms[room_code]["turn"] = "O"
+                    else:
+                        rooms[room_code]["turn"] = "X"
+
+
+                for connection in rooms[room_code]["game_connections"]:
+                    await connection.send_text(
+                        json.dumps({
+                            "type": "board_update",
+                            "board": rooms[room_code]["board"],
+                            "turn": rooms[room_code]["turn"],
+                            "winner": winner,
+                            "scores": rooms[room_code]["scores"]
+                        })
+                    )
+
+    except WebSocketDisconnect:
+        print("Game Disconnected")

@@ -30,7 +30,7 @@ copyBtn.addEventListener("click", () => {
 
 const P1 = document.getElementById("p1-name");
 const P2 = document.getElementById("p2-name");
-const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${roomCode}`);
+const socket = new WebSocket(`ws://127.0.0.1:8000/ws/lobby/${roomCode}`);
 
 socket.onopen = () => {
     socket.send(
@@ -43,7 +43,11 @@ socket.onopen = () => {
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    console.log(data);
+    
+    if(data.type == "Start Game"){
+        window.location.href = `onlinegame.html?room=${roomCode}&host=${isHost}&name=${username}`
+    }
+
     if (data.type === "Room Closed") {
         alert("Host disconnected");
         window.location.href = "online.html";
@@ -64,3 +68,9 @@ socket.onmessage = (event) => {
         startBtn.disabled = players.length !== 2;
     }
 }
+
+startBtn.addEventListener("click", () => {
+    socket.send(JSON.stringify({
+        type:"Start Game"
+    }));
+})
