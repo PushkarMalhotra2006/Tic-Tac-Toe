@@ -156,8 +156,12 @@ joinRoomBtn.addEventListener("click", async () => {
     if(response.ok){
         window.location.href = `lobby.html?room=${inputcode}&host=false&name=${username}`;
     }
-    else{
+    else if(response.status == 404) {
         errormsg.textContent = "Room not found";
+        errormsg.style.visibility = "visible";
+    }
+    else{
+        errormsg.textContent = "Room is Full";
         errormsg.style.visibility = "visible";
     }
 })

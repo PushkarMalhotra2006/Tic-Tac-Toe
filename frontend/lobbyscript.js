@@ -18,12 +18,6 @@ if (roomCode) {
     roomCodeDisplay.textContent = roomCode;
 }
 
-const P1_name = document.getElementById("p1-name");
-
-if(isHost){
-    P1_name.textContent = `${username} (X)`;
-}
-
 copyBtn.addEventListener("click", () => {
     navigator.clipboard.writeText(roomCodeDisplay.textContent);
 
@@ -34,6 +28,39 @@ copyBtn.addEventListener("click", () => {
     }, 2000);
 });
 
-if (isHost) {
-    startBtn.disabled = false;
+const P1 = document.getElementById("p1-name");
+const P2 = document.getElementById("p2-name");
+const socket = new WebSocket(`ws://127.0.0.1:8000/ws/${roomCode}`);
+
+socket.onopen = () => {
+    socket.send(
+        JSON.stringify({
+            username: username,
+            host: isHost
+        })
+    );
+};
+
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log(data);
+    if (data.type === "Room Closed") {
+        alert("Host disconnected");
+        window.location.href = "online.html";
+        return;
+    }
+
+    const players = data;
+    P1.textContent = players[0].username + " (X)";
+
+    if(players.length > 1){
+        P2.textContent = players[1].username + " (O)";
+    }
+    else{
+        P2.textContent = "Waiting for Opponent...";
+    }
+    
+    if (isHost) {
+        startBtn.disabled = players.length !== 2;
+    }
 }
