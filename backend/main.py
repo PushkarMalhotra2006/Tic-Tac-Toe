@@ -39,8 +39,6 @@ def generateroomcode():
     return code
 
 def checkwinner(board):
-    winnerfound = False
-
     for pattern in winning_patterns:
         first,second,third = pattern
 
@@ -48,7 +46,7 @@ def checkwinner(board):
             winnerfound = True
             return board[first]
     
-    if not winnerfound and "" not in board:
+    if "" not in board:
         return "Draw"
     
     return None
@@ -135,11 +133,12 @@ async def websocket_lobby(websocket: WebSocket, room_code: str):
                 rooms[room_code]["players"].append(
                     { "username" : data["username"], "host" : data["host"] }
                 )
-        
-                for connection in rooms[room_code]["connections"]:
-                    await connection.send_text(
-                        json.dumps(rooms[room_code]["players"])
-                    )
+                
+                if not rooms[room_code]["Game Started"]:
+                    for connection in rooms[room_code]["connections"]:
+                        await connection.send_text(
+                            json.dumps(rooms[room_code]["players"])
+                        )
             
                 print(rooms)
     except WebSocketDisconnect:

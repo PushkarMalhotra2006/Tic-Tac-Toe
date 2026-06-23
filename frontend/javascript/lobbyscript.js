@@ -44,7 +44,7 @@ socket.onopen = () => {
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     
-    if(data.type == "Start Game"){
+    if(data.type === "Start Game"){
         window.location.href = `onlinegame.html?room=${roomCode}&host=${isHost}&name=${username}`
     }
 

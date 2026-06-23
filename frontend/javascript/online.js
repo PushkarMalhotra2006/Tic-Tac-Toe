@@ -69,10 +69,6 @@ usernameDisplay.addEventListener("click", () => {
     }, 200);
 });
 
-function generateroomcode(){
-    let code = Math.random().toString(36).substring(2,8).toUpperCase();
-    return code;
-}
 
 createRoomBtn.addEventListener("click", async () => {
 
@@ -131,7 +127,7 @@ joinRoomBtn.addEventListener("click", async () => {
     const inputcode = roomCodeInput.value;
 
     if(inputcode === ""){
-        errormsg.textContent = "Please Enter a rooom code";
+        errormsg.textContent = "Please Enter a room code";
         errormsg.style.visibility = "visible";
         return;
     }
@@ -156,7 +152,7 @@ joinRoomBtn.addEventListener("click", async () => {
     if(response.ok){
         window.location.href = `lobby.html?room=${inputcode}&host=false&name=${username}`;
     }
-    else if(response.status == 404) {
+    else if(response.status === 404) {
         errormsg.textContent = "Room not found";
         errormsg.style.visibility = "visible";
     }

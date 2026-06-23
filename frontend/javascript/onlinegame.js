@@ -68,7 +68,7 @@ socket.onmessage = (event) => {
     }
 
     if(data.type === "rematch"){
-        board = data.board
+        board = data.board;
         cells.forEach((cell,index) => {
             cell.textContent = board[index];
         })
@@ -149,9 +149,4 @@ rematchBtn.addEventListener("click", () => {
 const xScoreText = document.getElementById("x-score");
 const drawScoreText = document.getElementById("draw-score");
 const oScoreText = document.getElementById("o-score");
-
-let xScore = 0;
-let drawScore = 0;
-let oScore = 0;
-
 const overlay = document.getElementById("overlay");
