@@ -1,6 +1,5 @@
 # Tic-Tac-Toe Multiplayer
 
-\# Tic-Tac-Toe Multiplayer
 
 
 
@@ -8,11 +7,11 @@ A full-stack real-time multiplayer Tic-Tac-Toe game built with HTML, CSS, JavaSc
 
 
 
-\## Features
+## Features
 
 
 
-\### Local Multiplayer
+### Local Multiplayer
 
 
 
@@ -30,7 +29,7 @@ A full-stack real-time multiplayer Tic-Tac-Toe game built with HTML, CSS, JavaSc
 
 
 
-\### Online Multiplayer
+### Online Multiplayer
 
 
 
@@ -52,7 +51,7 @@ A full-stack real-time multiplayer Tic-Tac-Toe game built with HTML, CSS, JavaSc
 
 
 
-\### User Experience
+### User Experience
 
 
 
@@ -68,25 +67,25 @@ A full-stack real-time multiplayer Tic-Tac-Toe game built with HTML, CSS, JavaSc
 
 
 
-\---
+---
+
+## Live Links
+
+Backend Link - https://tic-tac-toe-backend-a6m1.onrender.com
+
+Frontend Link - https://tic-tac-toe-multiplayer-ultra.vercel.app/index.html
 
 
 
-Backend Link - 
-
-Frontend Link - 
+---
 
 
 
-\---
+## Tech Stack
 
 
 
-\## Tech Stack
-
-
-
-\### Frontend
+### Frontend
 
 
 
@@ -98,7 +97,7 @@ Frontend Link -
 
 
 
-\### Backend
+### Backend
 
 
 
@@ -108,7 +107,7 @@ Frontend Link -
 
 
 
-\### Real-Time Communication
+### Real-Time Communication
 
 
 
@@ -116,7 +115,7 @@ Frontend Link -
 
 
 
-\### Deployment
+### Deployment
 
 
 
@@ -126,11 +125,11 @@ Frontend Link -
 
 
 
-\---
+---
 
 
 
-\## Project Structure
+## Project Structure
 
 
 
@@ -174,15 +173,15 @@ Tic-Tac-Toe/
 
 
 
-\---
+---
 
 
 
-\## How It Works
+## How It Works
 
 
 
-\### Local Multiplayer
+### Local Multiplayer
 
 
 
@@ -190,7 +189,7 @@ The local game uses client-side game state management with JavaScript. Players a
 
 
 
-\### Online Multiplayer
+### Online Multiplayer
 
 
 
@@ -220,11 +219,11 @@ Workflow:
 
 
 
-\---
+---
 
 
 
-\## Learning Outcomes
+## Learning Outcomes
 
 
 
@@ -248,11 +247,11 @@ This project was built to gain practical experience with:
 
 
 
-\---
+---
 
 
 
-\## Author
+## Author
 
 
 
