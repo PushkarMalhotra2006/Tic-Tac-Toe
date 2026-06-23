@@ -288,8 +288,8 @@ async def websocket_game(websocket: WebSocket, room_code: str):
                     )        
 
 
-    except WebSocketDisconnect:
-        print("GAME DISCONNECT TRIGGERED")
+    except Exception as e:
+        print("GAME DISCONNECT TRIGGERED", repr(e))
         if room_code not in rooms:
             return
         print("Before remove:", len(rooms[room_code]["game_connections"]))
