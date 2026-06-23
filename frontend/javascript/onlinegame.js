@@ -10,7 +10,7 @@ const roomCode = params.get("room");
 const username = params.get("name");
 const isHost = params.get("host") === "true";
 
-const socket = new WebSocket(`ws://127.0.0.1:8000/ws/game/${roomCode}`);
+const socket = new WebSocket(`wss://tic-tac-toe-backend-a6m1.onrender.com/ws/game/${roomCode}`);
 
 socket.onopen = () => {
     console.log("Game Connected");

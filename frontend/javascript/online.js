@@ -88,7 +88,7 @@ createRoomBtn.addEventListener("click", async () => {
         return;
     }
 
-    const response = await fetch("http://127.0.0.1:8000/create-room",{
+    const response = await fetch("https://tic-tac-toe-backend-a6m1.onrender.com/create-room",{
         method : "POST"
     });
 
@@ -137,7 +137,7 @@ joinRoomBtn.addEventListener("click", async () => {
         return;
     }
 
-    const response = await fetch("http://127.0.0.1:8000/join-room",
+    const response = await fetch("https://tic-tac-toe-backend-a6m1.onrender.com/join-room",
     {
         method: "POST",
         headers: {

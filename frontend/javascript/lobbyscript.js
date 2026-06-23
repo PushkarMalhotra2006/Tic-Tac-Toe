@@ -30,7 +30,7 @@ copyBtn.addEventListener("click", () => {
 
 const P1 = document.getElementById("p1-name");
 const P2 = document.getElementById("p2-name");
-const socket = new WebSocket(`ws://127.0.0.1:8000/ws/lobby/${roomCode}`);
+const socket = new WebSocket(`wss://tic-tac-toe-backend-a6m1.onrender.com/ws/lobby/${roomCode}`);
 
 socket.onopen = () => {
     socket.send(
