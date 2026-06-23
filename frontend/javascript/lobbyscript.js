@@ -1,6 +1,7 @@
 const backbutton = document.getElementById("button-back");
 
 backbutton.addEventListener("click", () => {
+    socket.close();
     window.location.href = "online.html";
 });
 

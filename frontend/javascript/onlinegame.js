@@ -1,6 +1,7 @@
 const backbutton = document.getElementById("button-back");
 
 backbutton.addEventListener("click", () => {
+    socket.close();
     window.location.href = "online.html";
 });
 
@@ -90,6 +91,7 @@ socket.onmessage = (event) => {
     }
 
     if(data.type === "player_disconnected"){
+        console.log("DISCONNECT MESSAGE RECEIVED");
         gameactive = false;
 
         resultHeading.textContent = "Opponent Disconnected";
@@ -132,6 +134,7 @@ const rematchBtn = document.getElementById("rematch");
 const homeBtn = document.getElementById("home");
 
 homeBtn.addEventListener("click", () => {
+    socket.close();
     window.location.href = "index.html";
 });
 
