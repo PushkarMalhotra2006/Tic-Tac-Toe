@@ -17,7 +17,7 @@ socket.onopen = () => {
 
     socket.send(
         JSON.stringify({
-            username: username,
+            "type": "player_info",
             host: isHost
         })
     );
